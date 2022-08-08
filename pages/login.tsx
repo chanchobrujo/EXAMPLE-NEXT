@@ -1,9 +1,12 @@
-import {NextPage} from 'next';
 import axios from 'axios';
+import {NextPage} from 'next';
 import React, {useState, FormEvent} from 'react';
-import {Data} from './api/auth/login';
+import {NextRouter, useRouter} from 'next/router';
+
+import {MessagerResponse} from './api/auth/login';
 
 const Login: NextPage = () => {
+  const router: NextRouter = useRouter();
   const [credentials, setCredentials] = useState({email: '', password: '******'});
 
   const handleChange = (e: FormEvent<HTMLInputElement>): void => {
@@ -15,8 +18,12 @@ const Login: NextPage = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const response = await axios.post<Data>('/api/auth/login', credentials);
-    console.log(response);
+    try {
+      await axios.post<MessagerResponse>('/api/auth/login', credentials);
+      router.push('/dashboard');
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

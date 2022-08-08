@@ -1,5 +1,6 @@
 import {verify} from 'jsonwebtoken';
 import type {NextApiRequest, NextApiResponse} from 'next';
+import {name_cokie, secret} from './utils/GeneralUtils';
 
 export type User = {
   name: string;
@@ -7,7 +8,11 @@ export type User = {
 };
 
 export default function profileHandler(req: NextApiRequest, res: NextApiResponse<User>) {
-  const token = req.cookies['my-token'] || '';
-  const user: any = verify(token, 'secret');
-  res.status(200).json({name: user['username'], email: user['email']});
+  try {
+    const token = req.cookies[name_cokie] || '';
+    const user: any = verify(token, secret);
+    res.status(200).json({name: user['username'], email: user['email']});
+  } catch (error) {
+    res.status(401);
+  }
 }
